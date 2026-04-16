@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Album Collection
+  if albums.length
+    ul
+      each album in albums
+        li
+          strong #{album.title} 
+          | by #{album.artist} (#{album.year})
+  else
+    p No albums found.

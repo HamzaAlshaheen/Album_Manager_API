@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1 Login
+  if error
+    p.error #{error}
+  form(method="POST" action="/login")
+    div
+      label Email:
+      input(type="email" name="email" required)
+    div
+      label Password:
+      input(type="password" name="password" required)
+    button(type="submit") Login
+  p
+    a(href="/register") Don't have an account? Register here.

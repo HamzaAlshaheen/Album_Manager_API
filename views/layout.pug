@@ -1,0 +1,31 @@
+doctype html
+html
+  head
+    title Album Manager
+    style.
+      nav { margin-bottom: 20px; border-bottom: 1px solid #ccc; padding: 10px; }
+      nav a { margin-right: 15px; }
+      .admin-note { color: blue; font-size: 0.8em; }
+      .error { color: red; }
+  body
+    nav
+      a(href="/albums")  All Albums
+      
+      if user
+        //- If the user is logged in
+        if user.role === "admin"
+          a(href="/albums/add")  Add Album
+        
+        span Welcome, #{user.email}
+        if user.role === "admin"
+           span.admin-note  (Admin)
+           
+        a(href="/logout")  Logout
+      else
+        a(href="/login") Login
+        a(href="/register") Register
+
+    block content
+      
+      if user && user.role !== "admin"
+        p.error Note: You do not have permission to add albums.

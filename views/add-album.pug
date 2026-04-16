@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1 Add New Album
+  form(action="/albums" method="POST")
+    div
+      label Artist: 
+      input(type="text" name="artist" required)
+    div
+      label Title: 
+      input(type="text" name="title" required)
+    div
+      label Year: 
+      input(type="number" name="year" required)
+    div
+      label Genre: 
+      input(type="text" name="genre" required)
+    div
+      label Track: 
+      input(type="number" name="tracks" required)
+    button(type="submit") Save Album

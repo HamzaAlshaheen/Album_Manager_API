@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1 Successfully added album
+  
+  div.success-box
+    h2 Raw JSON Data:
+    
+    pre #{JSON.stringify(album, null, 2)}
+  
+  hr
+  div
+    p 
+      strong Artist just added: 
+      | #{album.artist}
+    a(href="/albums") View All Albums
+    |  |  
+    a(href="/albums/add")  Add Another

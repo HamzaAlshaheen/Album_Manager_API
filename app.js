@@ -14,11 +14,18 @@ import { isAdmin } from './middleware/auth.js';
 const app = express();
 app.use(express.json());
 
-if (process.env.NODE_ENV !== 'test') {
-    mongoose.connect(process.env.MONGO_URI);
-}
+const PORT = process.env.PORT || 3000;
 
-// 2. Config
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log('MongoDB Connected');
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch(err => console.error('Connection Error:', err));
+
+
 app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -50,7 +57,9 @@ passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
     done(null, user);
 });
-
+app.get('/', (req, res) => {
+    res.redirect('/albums');
+});
 
 const isAuth = (req, res, next) => req.isAuthenticated() ? next() : res.redirect('/login');
 app.get("/api/albums", testingApi)

@@ -2,6 +2,8 @@
 #  Album Manager API
 
 A full-stack Express and Mongoose application for managing a personal music collection. This app includes user authentication, administrative controls, and a fully automated testing suite.
+
+[Live Preview](https://humble-illumination-production-8ca8.up.railway.app/albums)
 ## Home
 ![](./images/home.png)
 

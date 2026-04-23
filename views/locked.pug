@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  .container.text-center.mt-5
+    h1.display-1 
+    h2.text-danger Account Locked
+    
+    .alert.alert-warning.mt-4.d-inline-block
+      p.mb-0 You have entered an incorrect password too many times.
+    
+    p.mt-3 For your security, your account has been temporarily locked to prevent unauthorized access.
+    p Please wait 
+      strong 15 minutes 
+      | before trying again.
+
+    .mt-4
+      a.btn.btn-outline-primary(href="/login") Return to Login

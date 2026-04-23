@@ -9,7 +9,7 @@ import User from './models/userModel.js';
 import { register, logout } from './controllers/authController.js';
 import { renderAlbums, renderAddForm, createAlbum, testingApi, PostTest } from './controllers/albumController.js';
 import { isAdmin } from './middleware/auth.js';
-import flash from 'connect-flash';
+import flash from 'connect-flash'; // Added for Assessment
 
 const app = express();
 app.use(express.json());
@@ -19,6 +19,9 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('MongoDB Connected');
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
     })
     .catch(err => console.error('Connection Error:', err));
 
@@ -31,10 +34,11 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use(flash());
+app.use(flash()); // Added for Assessment
 app.use(passport.initialize());
 app.use(passport.session());
 
+// EXACT NEW ASSESSMENT LOGIC: Brute Force Protection
 passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
     try {
         const user = await User.findOne({ email });
@@ -47,7 +51,6 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             user.loginAttempts += 1
-            
             if (user.loginAttempts >= 3){
                 user.lockUntil = Date.now() + 15 * 60 * 1000
             }
@@ -86,35 +89,24 @@ app.get('/login', (req, res) => {
         error: errorMessages.length > 0 ? errorMessages[0] : null 
     });
 });
-app.post('/login', (req, res, next) => {
 
-    // Warping passport.authenticate in a custom callback
+app.post('/login', (req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
-        if (err) { 
-            return next(err); 
-        }
-        
-        // AUTHENTICATION FAILED 
+        if (err) { return next(err); }
         if (!user) {
-            // 1. Check if the account is locked
             if (info && info.message && info.message.includes('Account locked')) {
                 return res.redirect('/locked'); 
             }
-            
-            // 2. Otherwise, it's a normal failure. Save error to flash and redirect.
             req.flash('error', info.message);
             return res.redirect('/login'); 
         }
-        
-        // AUTHENTICATION SUCCEEDED
-        // Because we are using a custom callback, we have to manually log them in
         req.logIn(user, (err) => {
             if (err) { return next(err); }
             return res.redirect('/albums');
         });
-
     })(req, res, next); 
 });
+
 app.get('/locked', (req, res) => {
     res.render('locked');
 });
@@ -124,8 +116,6 @@ app.get('/albums', renderAlbums);
 app.get('/albums/add', isAdmin ,isAuth, renderAddForm);
 app.post('/albums', isAuth, createAlbum);
 
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
 
-app.listen(PORT, '0.0.0.0', () => { 
-            console.log(`Server running on port ${PORT}`);
-        });
-export default app
+export default app;

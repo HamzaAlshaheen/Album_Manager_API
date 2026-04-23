@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log('MongoDB Connected');
-        app.listen(PORT, () => {
+        app.listen(PORT, '0.0.0.0', () => { 
             console.log(`Server running on port ${PORT}`);
         });
     })
@@ -34,7 +34,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -66,7 +66,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, passwor
         return done(err);
     }
 }));
-app.use(flash());
+
 passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser(async (id, done) => {
     const user = await User.findById(id);
@@ -99,18 +99,13 @@ app.post('/login', (req, res, next) => {
         
         // AUTHENTICATION FAILED 
         if (!user) {
+            // 1. Check if the account is locked
             if (info && info.message && info.message.includes('Account locked')) {
                 return res.redirect('/locked'); 
             }
-            // Save the error to flash memory so the GET route can see it!
+            
+            // 2. Otherwise, it's a normal failure. Save error to flash and redirect.
             req.flash('error', info.message);
-            return res.redirect('/login');
-            // Check the 'info' message we sent from the LocalStrategy
-            if (info && info.message && info.message.includes('Account locked')) {
-                // If locked out, redirect to special lockout page
-                return res.redirect('/locked'); 
-            }
-            // Otherwise, it was just a bad password/email
             return res.redirect('/login'); 
         }
         

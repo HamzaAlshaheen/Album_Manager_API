@@ -9,7 +9,7 @@ import User from './models/userModel.js';
 import { register, logout } from './controllers/authController.js';
 import { renderAlbums, renderAddForm, createAlbum, testingApi, PostTest } from './controllers/albumController.js';
 import { isAdmin } from './middleware/auth.js';
-import flash from 'connect-flash'; // Added for Assessment
+import flash from 'connect-flash'; 
 
 const app = express();
 app.use(express.json());
@@ -34,11 +34,11 @@ app.use(session({
     saveUninitialized: false
 }));
 
-app.use(flash()); // Added for Assessment
+app.use(flash()); 
 app.use(passport.initialize());
 app.use(passport.session());
 
-// EXACT NEW ASSESSMENT LOGIC: Brute Force Protection
+//  Brute Force Protection logic
 passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
     try {
         const user = await User.findOne({ email });
